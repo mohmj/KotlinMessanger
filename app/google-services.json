@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "28142584268",
+    "firebase_url": "https://kotlinmessanger-ecb70.firebaseio.com",
+    "project_id": "kotlinmessanger-ecb70",
+    "storage_bucket": "kotlinmessanger-ecb70.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28142584268:android:a76fc33b962cc28af2dd69",
+        "android_client_info": {
+          "package_name": "com.softwareclinics.kotlinmessanger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "28142584268-mgh6f8u965pvtr4bvqpj9kjjhnl7l3ri.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.softwareclinics.kotlinmessanger",
+            "certificate_hash": "b75411e19eee83557c5b7f750aa3763c0569be55"
+          }
+        },
+        {
+          "client_id": "28142584268-c45n10u6hlu6ct6tnonce71a9lf0569s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmuFW0rZcq-dnaew9Fp7MiSDeWvYoMQSw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "28142584268-c45n10u6hlu6ct6tnonce71a9lf0569s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
