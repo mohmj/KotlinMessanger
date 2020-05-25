@@ -14,12 +14,14 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.getInstance
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
+import com.softwareclinics.kotlinmessanger.Handler.Handel
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -27,10 +29,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var storage: FirebaseStorage
     private lateinit var firebaseDatebase: FirebaseDatabase
+    private lateinit var database:DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        var Handel= Handel()
 
         // Function to upload the rigestration information the database (picture, name, email and the password).
         sign_up_button.setOnClickListener(){
@@ -62,27 +66,31 @@ class MainActivity : AppCompatActivity() {
             var bitmap=MediaStore.Images.Media.getBitmap(contentResolver,selectPhotoUri);
             var bitmapDrawable=BitmapDrawable(bitmap)
             sign_up_select_photo.setBackgroundDrawable(bitmapDrawable)
-            sign_up_select_photo.text=""
+
         }
     }
        //----------------------------------------------------------------------------------------------------------------------
 
     // the function of upload the data to the database.
     private fun performSignUp(){
-        val userName=sign_up_name_edit_text.text.toString()
+        val username=sign_up_name_edit_text.text.toString()
         val email=sign_up_email_edit_text.text.toString();
         val password=sign_up_password_edit_text.text.toString();
-        Log.d("MainActivity","\n User name: $userName \n E-mail: $email \n Password: $password")
+        var Handel= Handel()
+        Log.d("MainActivity","\n User name: $username \n E-mail: $email \n Password: $password")
 
         // Firebase authentication to create user
-        if(userName.isEmpty() || email.isEmpty() || password.isEmpty()){
+        if(username.isEmpty() || email.isEmpty() || password.isEmpty()){
             Toast.makeText(this,"Please fill your datda",Toast.LENGTH_LONG).show()
             return
         }
 
         auth=Firebase.auth
+        database=Firebase.database.reference
         auth.createUserWithEmailAndPassword(email,password).addOnSuccessListener {
             uploadImageToFirebaseStorage()
+            Handel.email=email
+            Handel.username=username
             return@addOnSuccessListener
         }.addOnFailureListener(){Log.d("Main","Faild to create user: ${it.message}")
         Toast.makeText(this,"Faild to create user: ${it.message}",Toast.LENGTH_LONG).show()
@@ -90,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     //----------------------------------------------------------------------------------------------------------------------
+    // Function for upload image to the database
     private fun uploadImageToFirebaseStorage(){
         storage=Firebase.storage
         val storageRefrecne=storage.reference
@@ -100,22 +109,30 @@ class MainActivity : AppCompatActivity() {
         imageRefrence.putFile(selectPhotoUri!!).addOnSuccessListener {
             imageRefrence.downloadUrl.addOnSuccessListener {
                 var profileImageUrl =it.toString()
+                Log.d("one",profileImageUrl)
                 saveUserToTheDatebase(profileImageUrl)
             }
             Toast.makeText(this,"Sign up successful !",Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this,LogInActivity::class.java))
-
+            var LatestMessageActivityIntent=Intent(this,LatestMessageActivity::class.java)
+            LatestMessageActivityIntent.flags=Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(LatestMessageActivityIntent)
         }
 
     }
+    //----------------------------------------------------------------------------------------------------------------------
     private fun saveUserToTheDatebase(profileImageLink:String){
+        var uid=Firebase.auth.uid?:""
         var email=sign_up_email_edit_text.text.toString()
-        var userName=sign_up_name_edit_text.text.toString()
-        firebaseDatebase=Firebase.database
-        var databaseRefrence=firebaseDatebase.reference.child("users/$email");
-        val user=User(userName,email,profileImageLink)
-        databaseRefrence.setValue(user)
+        var username=sign_up_name_edit_text.text.toString()
+        var password=sign_up_password_edit_text.text.toString()
+        var Handel= Handel()
+        database=Firebase.database.reference
+        val user=User(uid, username,email,password,profileImageLink)
+//        database.child(username).setValue(uid)
+        database.child(username).setValue(user)
     }
 }
 
-class User(val userName:String, val email:String, val imageLink:String)
+class User(val uid:String, val username:String?, val email:String?,val password:String, val imageLink:String?){
+    constructor() :this("","","","","")
+    }
